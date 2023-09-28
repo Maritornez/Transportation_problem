@@ -14,20 +14,23 @@ K магазинами, при котором стоимость перевоз�
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <iomanip>
+#include <string>
 
 using namespace std;
 
-const int N = 30;             // число складов (y)
-const int K = 30;             // число магазинов (x)
+const int N = 10;             // число складов (y)
+const int K = 10;             // число магазинов (x)
 vector<vector<int>> cost;     // матрица стоимости перевозок
 const int cost_min = 1;       // минимальная цена перевозки
 const int cost_max = 10;      // максимальная цена перевозки
 const int plan_min = 2;       // минимальное значение плана перевозки из какого-то склада в какой-то магазин
 const int plan_max = 10;      // максимальное значение плана перевозки из какого-то склада в какой-то магазин
+const int transfer_size = 1;  // размер изменения величины перевоза товара в функции Swap()
 
-const double Tn = 100.0;      // начальная температура
+const double Tn = 1000.0;      // начальная температура
 const double Tk = 0.01;       // конечная температура
-const double Alfa = 0.98;     // скорость охлаждния
+const double Alfa = 0.98;     // скорость охлаждения
 const int ST = 1000;          // число итераций при смене T
 
 struct TSolution {            // решение
@@ -65,7 +68,7 @@ void show_cost_matrix(vector<vector<int>> matrix) {
     cout << "Матрица стоимостей перевозок:" << endl;
     for (auto row : matrix) {
         for (auto val : row) {
-            std::cout << val << ' ';
+            std::cout << setw(std::to_string(cost_max).length()) << val << ' ';
         }
         std::cout << std::endl;
     }
@@ -127,10 +130,10 @@ void Swap(TSolution* M) { // модификация решения
             if (elapsedTime >= timeoutSecondsOuterLoop1) break;
         }
         // Изменение четырех элементов в плане
-        M->plan[y1][x1] -= 1;
-        M->plan[y1][x2] += 1;
-        M->plan[y2][x1] += 1;
-        M->plan[y2][x2] -= 1;
+        M->plan[y1][x1] -= transfer_size;
+        M->plan[y1][x2] += transfer_size;
+        M->plan[y2][x1] += transfer_size;
+        M->plan[y2][x2] -= transfer_size;
     } else {
         // Нахождение двух случайных элементов в плане, чтобы они образовали прямоугольник
         //
@@ -177,10 +180,10 @@ void Swap(TSolution* M) { // модификация решения
 
         }
         // Изменение четырех элементов в плане
-        M->plan[y1][x1] -= 1;
-        M->plan[y1][x2] += 1;
-        M->plan[y2][x1] += 1;
-        M->plan[y2][x2] -= 1;
+        M->plan[y1][x1] -= transfer_size;
+        M->plan[y1][x2] += transfer_size;
+        M->plan[y2][x1] += transfer_size;
+        M->plan[y2][x2] -= transfer_size;
     }
 
 }
@@ -222,7 +225,7 @@ void Show(TSolution M) { // отображение на экране матри�
     cout << "Решение:" << endl;
     for (auto row : M.plan) {
         for (auto val : row) {
-            std::cout << val << ' ';
+            std::cout << setw(std::to_string(plan_max).length() + 1) << val << ' ';
         }
         std::cout << std::endl;
     }
